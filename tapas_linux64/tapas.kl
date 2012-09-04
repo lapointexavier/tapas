@@ -8,6 +8,7 @@ struct Tapas
 
 function Tapas(String name, Float32 price)
 {
+    report("Initializing Tapas [Proto 1]");
     this.name = name;
     this.price = price;
     this.quantity = 1;   // Alright ... let's start with one.
@@ -16,6 +17,7 @@ function Tapas(String name, Float32 price)
 
 function Tapas(String name, Float32 price, SInt8 quantity)
 {
+    report("Initializing Tapas  [Proto 2]");
     this.name = name;
     this.price = price;
     if(quantity > 0)
@@ -25,10 +27,7 @@ function Tapas(String name, Float32 price, SInt8 quantity)
 }
 
 
-function ~Tapas()
-{
-    report("That Tapas was ridiculously good.");
-}
+function ~Tapas(){}
 
 
 struct DateTime
@@ -75,23 +74,22 @@ function DateTime(SInt16 year, SInt16 month, SInt16 day, SInt16 hour, SInt16 min
 }
 
 
-function ~DateTime()
-{
-    report("See you soon!");
-}
+function ~DateTime(){}
 
 
 struct MontrealSiTdsMeeting
 {
     DateTime datetime;
     String restaurant;
+    Tapas menu[];
 };
 
 
-function MontrealSiTdsMeeting(DateTime when, String restaurant)
+function MontrealSiTdsMeeting(DateTime when, String restaurant, Tapas menu[])
 {
     report("Creating MontrealSiTdsMeeting!");
 
+    this.menu = menu;
     this.datetime = when;
     this.restaurant = restaurant;
 }
@@ -105,7 +103,8 @@ function ~MontrealSiTdsMeeting()
 
 function Boolean MontrealSiTdsMeeting.gotTapas()
 {
-
+    if(this.menu.size > 0)
+        return true;
     return false;
 }
 
@@ -125,13 +124,58 @@ function Boolean MontrealSiTdsMeeting.imIn()
     return false;
 }
 
+struct PriceQuantity
+{
+    Float32 price;
+    Integer quantity;
+};
+
+
+function PriceQuantity(Float32 price)
+{
+    this.price = price;
+    this.quantity = 1;
+}
+
+
+function PriceQuantity(Float32 price, Integer quantity)
+{
+    this.price = price;
+    if(quantity > 0)
+        this.quantity = quantity;
+    else
+        this.quantity = 1;
+}
+
+
+function ~PriceQuantity(){}
+
+
+function Tapas[] buildMenu(PriceQuantity menuItems[String])
+{
+    Tapas menu[];
+    for(item in menuItems)
+        menu.push(Tapas(item, menuItems[item].price, menuItems[item].quantity));
+
+    return menu;
+}
+
 
 operator entry() {
     DateTime when(2012, 9, 14, 19, 33, 22, 977);
     report(when.repr);
 
-    Tapas[] tapas = buildMenu(menuItems);
+    PriceQuantity menuItems[String];
+    menuItems["paella valenciana"] = PriceQuantity(8.42, 2);
+    menuItems["tortilla de patatas"] = PriceQuantity(6.78, 2);
+    menuItems["pulpo"] = PriceQuantity(3.45, 3);
 
-    MontrealSiTdsMeeting meeting(when, "Club Espagnol du Quebec");
-    meeting.imIn();
+    report("Menu Initialized ...");
+
+    MontrealSiTdsMeeting meeting(when, "Club Espagnol du Quebec", buildMenu(menuItems));
+
+    report("Meeting Initialized .... who's in?");
+
+    if(meeting.imIn() == true)
+        report("Yayyy!");
 }

@@ -1,0 +1,137 @@
+struct Tapas
+{
+    String name;
+    Float32 price;
+    SInt8 quantity;
+};
+
+
+function Tapas(String name, Float32 price)
+{
+    this.name = name;
+    this.price = price;
+    this.quantity = 1;   // Alright ... let's start with one.
+}
+
+
+function Tapas(String name, Float32 price, SInt8 quantity)
+{
+    this.name = name;
+    this.price = price;
+    if(quantity > 0)
+        this.quantity = quantity;
+    else
+        this.quantity = 1;
+}
+
+
+function ~Tapas()
+{
+    report("That Tapas was ridiculously good.");
+}
+
+
+struct DateTime
+{
+    SInt16 year;
+    SInt16 month;
+    SInt16 day;
+    SInt16 hour;
+    SInt16 minute;
+    SInt16 second;   // Better be on time moffos!
+    SInt16 millisecond;   // Srsly?!
+    String repr;
+};
+
+
+function DateTime(SInt16 year, SInt16 month, SInt16 day)
+{
+    report("Setting Meeting time");
+
+    this.year = year;
+    this.month = month;
+    this.day = day;
+}
+
+
+function DateTime(SInt16 year, SInt16 month, SInt16 day, SInt16 hour, SInt16 minute, SInt16 second, SInt16 millisecond)
+{
+    report("Setting Meeting time");
+
+    this.year = year;
+    this.month = month;
+    this.day = day;
+    this.hour = hour;
+    this.minute = minute;
+    this.second = second;
+    this.millisecond = millisecond;
+    this.repr = \
+          this.month + "/" \
+        + this.day + "/"   \
+        + this.year + " @ "  \
+        + this.hour + ":"    \
+        + this.minute + ":"  \
+        + this.second;
+}
+
+
+function ~DateTime()
+{
+    report("See you soon!");
+}
+
+
+struct MontrealSiTdsMeeting
+{
+    DateTime datetime;
+    String restaurant;
+};
+
+
+function MontrealSiTdsMeeting(DateTime when, String restaurant)
+{
+    report("Creating MontrealSiTdsMeeting!");
+
+    this.datetime = when;
+    this.restaurant = restaurant;
+}
+
+
+function ~MontrealSiTdsMeeting()
+{
+    report("That was gooooodd. Time to go home.");
+}
+
+
+function Boolean MontrealSiTdsMeeting.gotTapas()
+{
+
+    return false;
+}
+
+
+function Boolean MontrealSiTdsMeeting.available()
+{
+    if(this.datetime.year && this.datetime.month && this.datetime.day)
+        return true;
+    return false;
+}
+
+
+function Boolean MontrealSiTdsMeeting.imIn()
+{
+    if(this.available() && this.gotTapas())
+        return true;
+    return false;
+}
+
+
+operator entry() {
+    DateTime when(2012, 9, 14, 19, 33, 22, 977);
+    report(when.repr);
+
+    Tapas[] tapas = buildMenu(menuItems);
+
+    MontrealSiTdsMeeting meeting(when, "Club Espagnol du Quebec");
+    meeting.imIn();
+}
